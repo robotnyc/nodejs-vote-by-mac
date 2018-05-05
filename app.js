@@ -1,7 +1,7 @@
 "use strict";
 
-var http = require('http');
-var macfromip = require('macfromip');
+const http = require('http');
+const macfromip = require('macfromip');
 
 async function get_mac(ip) {
     return new Promise(function(resolve, reject) {
