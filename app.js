@@ -30,9 +30,9 @@ http.createServer((async (req, res) => {
         return;
     }
 
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write('Hello ' + mac + '!\n'); //write a response to the client
-    res.end(); //end the response
-  })).listen(8080, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (macfromip only supports IPv4)
+    res.writeHead(200, {'Content-Type': 'text/text'});
+    res.write('Hello ' + mac + '!\n');
+    res.end();
+})).listen(8080, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (macfromip only supports IPv4)
 
 console.log("Server listening on port 8080\n");
