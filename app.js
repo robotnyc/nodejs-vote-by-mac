@@ -60,7 +60,7 @@ http.createServer((async (req, res) => {
     // process vote from URL server/#
     let url = req.url.replace(/^\/+/g, '');
     switch (true) {
-        case (parseInt(url) > 0):
+        case ((parseInt(url) > 0) && (parseInt(url) < 100)):
             console.log('Vote: ' + url);
             votes[mac] = url;
             res.writeHead(200, {'Content-Type': 'text/html'});
