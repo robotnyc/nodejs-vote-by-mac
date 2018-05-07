@@ -10,9 +10,6 @@ var votes = {};
 
 async function render_results(req, res) {
     let results = {};
-    let data = await util.promisify(fs.readFile)('./index.html', 'utf8');
-        // .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac}</span>`)
-        // .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote for ${parseInt(url)} has been recorded.</span>`);
     let votes_html = "";
     for (var voter in votes) {
         let vote = votes[voter];
@@ -20,13 +17,14 @@ async function render_results(req, res) {
             results[vote] += 1;
         else
             results[vote] = 1;
-        votes_html += `\t<tr>\n\t\t<td>${voter}</td>\n\t\t<td>${votes[voter]}</td>\n\t</tr>\n`;
+        votes_html += `\t<tr>\n\t\t<td>${voter.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</td>\n\t\t<td>${votes[voter]}</td>\n\t</tr>\n`;
     }
-    data = data.replace(/<span id="tr-mac-vote" style="display:none;"><\/span>/g, votes_html);
     let results_html = "";
     for (var choice in results)
         results_html += '\t<tr>\n\t\t<td>' + choice + '</td>\n\t\t<td>' + results[choice] + '</td>\n\t</tr>\n';
-    data = data.replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
+    let data = (await util.promisify(fs.readFile)('./index.html', 'utf8'))
+        .replace(/<span id="tr-mac-vote" style="display:none;"><\/span>/g, votes_html)
+        .replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(data);
     res.end();
@@ -50,7 +48,7 @@ http.createServer((async (req, res) => {
             console.log('Vote: ' + url);
             votes[mac] = url;
             var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
-                .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac}</span>`)
+                .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</span>`)
                 .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote for ${parseInt(url)} has been recorded.</span>`);
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(data);
