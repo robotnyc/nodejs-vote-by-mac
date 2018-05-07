@@ -1,16 +1,15 @@
 "use strict";
 
 const http = require('http');
-const macfromip = require('macfromip');
+const { exec } = require('child_process');
 
-async function get_mac(ip) {
+function execPromise(command) {
     return new Promise(function(resolve, reject) {
-        macfromip.getMac(ip, function(err, data) {
-            if (err) {
-                console.log(err);
-                reject(err);
-            } else
-                resolve(data);
+        exec(command, (error, stdout, stderr) => {
+            if (error)
+                reject(error);
+            else
+                resolve(stdout.trim());
         });
     });
 };
@@ -50,15 +49,15 @@ function render_results(req, res) {
 
 http.createServer((async (req, res) => {
     console.log('Request from: ' + req.connection.remoteAddress);
+    var mac = await execPromise(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`);
 
-    try {
-        var mac = await get_mac(req.connection.remoteAddress);
-    } catch (e) {
-        console.log(e.name + ': ' + e.message);
+    // MAC not found / invalid (e.g. localhost)
+    if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
         render_results(req, res);
         return;
     }
 
+    // process vote from URL server/#
     let url = req.url.replace(/^\/+/g, '');
     switch (true) {
         case (parseInt(url) > 0):
