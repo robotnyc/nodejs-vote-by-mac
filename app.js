@@ -65,7 +65,7 @@ http.createServer((async (req, res) => {
             votes[mac] = url;
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write('<!DOCTYPE html>\n<html>\n');
-            res.write('<head>\n<meta name="viewport" content="width=device-width, initial-scale=1">\n');
+            res.write('<head>\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<metahttp-equiv="refresh" content="5;url=/" />\n');
             res.write('<style>\np {\n\tfont-size: 10vw;\n}\n\n</style></head>\n');
             res.write('<body>\n');
             res.write('<p>Hello ' + mac + '!</p>\n');
