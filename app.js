@@ -70,6 +70,6 @@ http.createServer((async (req, res) => {
             console.log('NaN : ' + url + '\n');
             render_results(req, res);
     }
-})).listen(8080, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (macfromip only supports IPv4)
+})).listen(8080, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
 
 console.log("Server listening on port 8080\n");
