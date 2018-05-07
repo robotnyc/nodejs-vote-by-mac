@@ -1,18 +1,8 @@
 "use strict";
 
 const http = require('http');
+const util = require('util');
 const { exec } = require('child_process');
-
-function execPromise(command) {
-    return new Promise(function(resolve, reject) {
-        exec(command, (error, stdout, stderr) => {
-            if (error)
-                reject(error);
-            else
-                resolve(stdout.trim());
-        });
-    });
-};
 
 // votes are stored in RAM
 var votes = {};
@@ -49,7 +39,7 @@ function render_results(req, res) {
 
 http.createServer((async (req, res) => {
     console.log('Request from: ' + req.connection.remoteAddress);
-    var mac = await execPromise(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`);
+    var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
 
     // MAC not found / invalid (e.g. localhost)
     if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
