@@ -59,7 +59,7 @@ http.createServer((async (req, res) => {
             delete votes[mac];
             var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
                 .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac}</span>`)
-                .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote has been deleted..</span>`);
+                .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote has been deleted.</span>`);
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(data);
             res.end();
