@@ -2,37 +2,33 @@
 
 const http = require('http');
 const util = require('util');
+const fs = require('fs');
 const { exec } = require('child_process');
 
 // votes are stored in RAM
 var votes = {};
 
-function render_results(req, res) {
+async function render_results(req, res) {
     let results = {};
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write('<!DOCTYPE html>\n<html>\n');
-    res.write('<head>\n<meta name="viewport" content="width=device-width, initial-scale=1">\n');
-    res.write('<style>\nh1, table {\n\tfont-size: 10vw;\n\tborder-collapse: collapse;\n}\ntable, th, td {\n\tborder: 1px solid #ddd;\n}\n</style></head>\n');
-    res.write('<p>Go to /NUMBER to cast or update your vote.</p>\n');
-    res.write('<p>Go to /0 to delete your vote.</p>\n');
-    res.write('<p>Go to / for the results.</p>\n');
-    res.write('<body>\n<h1>Votes</h1>\n');
-    res.write('<table>\n\t<tr>\n\t\t<th>MAC</th>\n\t\t<th>Vote</th>\n</tr>\n');
+    let data = await util.promisify(fs.readFile)('./index.html', 'utf8');
+        // .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac}</span>`)
+        // .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote for ${parseInt(url)} has been recorded.</span>`);
+    let votes_html = "";
     for (var voter in votes) {
         let vote = votes[voter];
         if (vote in results)
             results[vote] += 1;
         else
             results[vote] = 1;
-        res.write('\t<tr>\n\t\t<td>' + voter + '</td>\n\t\t<td>' + votes[voter] + '</td>\n\t<tr>\n');
+        votes_html += `\t<tr>\n\t\t<td>${voter}</td>\n\t\t<td>${votes[voter]}</td>\n\t</tr>\n`;
     }
-    res.write('<table>\n');
-    res.write('<h1>Results</h1>\n');
-    res.write('<table>\n\t<tr>\n\t\t<th>Choice</th>\n\t\t<th>Count</th>\n</tr>\n');
-    for (var choice in results) {
-        res.write('\t<tr>\n\t\t<td>' + choice + '</td>\n\t\t<td>' + results[choice] + '</td>\n\t<tr>\n');
-    }
-    res.write('</table>\n</body>\n</html>');
+    data = data.replace(/<span id="tr-mac-vote" style="display:none;"><\/span>/g, votes_html);
+    let results_html = "";
+    for (var choice in results)
+        results_html += '\t<tr>\n\t\t<td>' + choice + '</td>\n\t\t<td>' + results[choice] + '</td>\n\t</tr>\n';
+    data = data.replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
     res.end();
     return;
 };
@@ -53,27 +49,21 @@ http.createServer((async (req, res) => {
         case ((parseInt(url) > 0) && (parseInt(url) < 100)):
             console.log('Vote: ' + url);
             votes[mac] = url;
+            var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
+                .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac}</span>`)
+                .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote for ${parseInt(url)} has been recorded.</span>`);
             res.writeHead(200, {'Content-Type': 'text/html'});
-            res.write('<!DOCTYPE html>\n<html>\n');
-            res.write('<head>\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<metahttp-equiv="refresh" content="5;url=/" />\n');
-            res.write('<style>\np {\n\tfont-size: 10vw;\n}\n\n</style></head>\n');
-            res.write('<body>\n');
-            res.write('<p>Hello ' + mac + '!</p>\n');
-            res.write('<p>Your vote for ' + url + ' has been recorded.</p>\n');
-            res.write('</body>\n</html>\n');
+            res.write(data);
             res.end();
             break;
         case (parseInt(url) == 0):
             console.log('Vote: ' + url);
             delete votes[mac];
+            var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
+                .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac}</span>`)
+                .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote has been deleted..</span>`);
             res.writeHead(200, {'Content-Type': 'text/html'});
-            res.write('<!DOCTYPE html>\n<html>\n');
-            res.write('<head>\n<meta name="viewport" content="width=device-width, initial-scale=1">\n');
-            res.write('<style>\np {\n\tfont-size: 10vw;\n}\n\n</style></head>\n');
-            res.write('<body>\n');
-            res.write('<p>Hello ' + mac + '!</p>\n');
-            res.write('<p>Your vote has been deleted.</p>\n');
-            res.write('</body>\n</html>\n');
+            res.write(data);
             res.end();
             break;
         default:

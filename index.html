@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote by MAC</title>
+    <style>
+        body {
+            font-family: monospace;
+            font-size: 20px;
+        }
+
+        .header {
+            font-size: 3em;
+        }
+
+        h1 {
+            font-size: 1.5em;
+        }
+
+        table {
+            font-size: 1em;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid lightgray;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: lightgray;
+        }
+
+        ul {
+            font-size: .3em;
+            font-weight: bold;
+
+        }
+
+        .title {
+            max-width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 3em;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">Vote by MAC</h1>
+    <div class="header">
+        <ul>
+            <li>Go to /NUMBER to cast or update your vote.</li>
+            <li>Go to /0 to delete your vote.</li>
+            <li>Go to / for the results.</li>
+        </ul>
+    </div>
+    <h1>Votes</h1>
+    <table>
+        <tr>
+            <th>MAC</th>
+            <th>Vote</th>
+        </tr>
+        <span id="tr-mac-vote" style="display:none;"></span>
+    </table>
+    <h1>Results</h1>
+    <table>
+        <tr>
+            <th>Choice</th>
+            <th>Count</th>
+        </tr>
+        <span id="tr-choice-count" style="display:none;"></span>
+    </table>
+</body>
+</html>
