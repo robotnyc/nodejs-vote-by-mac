@@ -34,7 +34,7 @@ async function render_results(req, res) {
 if (!isNaN(parseInt(process.argv[2])))
 	var port = process.argv[2];
 else
-	var port = 80;
+	var port = 8080;
 
 http.createServer((async (req, res) => {
     var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
