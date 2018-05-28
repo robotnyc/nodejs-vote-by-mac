@@ -71,4 +71,4 @@ http.createServer((async (req, res) => {
     }
 })).listen(port, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
 
-console.log(`Server listening on port ${port}\n`);
+console.log(`Server listening on port ${port}`);
