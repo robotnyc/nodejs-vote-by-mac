@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vote by MAC</title>
     <style>
+        html, body {
+            height: 100%;
+            margin: 0pt;
+        }
+
+        header, main, footer {
+            flex-shrink: 0;
+        }
+
+        header {
+            font-size: 3em;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+	    body {
+            min-height: 100vH;
+            display: flex;
+            flex-direction: column;
+        }
+
         body {
             font-family: monospace;
             font-size: 20px;
@@ -12,11 +35,14 @@
             color: #ffffff;
         }
 
-        .header {
+        h1 {
+            max-width: 100%;
+            text-align: center;
+            font-weight: bold;
             font-size: 3em;
         }
 
-        h1 {
+        h2 {
             font-size: 1.5em;
             text-align: center;
         }
@@ -43,32 +69,24 @@
             font-weight: bold;
         }
 
-        .title {
-            max-width: 100%;
-            text-align: center;
-            font-weight: bold;
-            font-size: 3em;
-        }
-
         footer {
-            position: fixed;
-	    left: 0;
-	    bottom: 0;
-	    width: 100%;
-	    text-align: center;
+            position: relative;
+	        width: 100%;
+	        text-align: center;
             font-size: .8em;
         }
     </style>
 </head>
 <body>
-    <h1 class="title">Vote by MAC</h1>
-    <div class="header">
+    <h1>Vote by MAC</h1>
+    <header>
         <ul>
-            <li><a href="/NUMBER">/NUMBER</a> to cast/update vote for NUMBER.</li>
+            <li><a href="/#">/#</a> to cast/change vote.</li>
             <li><a href="/0">/0</a> to delete vote.</li>
         </ul>
-    </div>
-    <h1>Results</h1>
+    </header>
+    <main>
+    <h2>Results</h2>
     <table>
         <tr>
             <th>Choice</th>
@@ -76,7 +94,7 @@
         </tr>
         <span id="tr-choice-count" style="display:none;"></span>
     </table>
-    <h1>Votes</h1>
+    <h2>Votes</h2>
     <table>
         <tr>
             <th>MAC</th>
@@ -84,6 +102,7 @@
         </tr>
         <span id="tr-mac-vote" style="display:none;"></span>
     </table>
+    </main>
     <footer>
         <p>Fork me on GitHub: <a href="https://github.com/lucasrangit/nodejs-vote-by-mac">lucasrangit/nodejs-vote-by-mac</a></p>
     </footer>
