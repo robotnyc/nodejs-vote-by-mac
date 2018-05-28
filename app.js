@@ -32,7 +32,6 @@ async function render_results(req, res) {
 };
 
 http.createServer((async (req, res) => {
-    console.log('Request from: ' + req.connection.remoteAddress);
     var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
 
     // MAC not found / invalid (e.g. localhost)
@@ -45,7 +44,6 @@ http.createServer((async (req, res) => {
     let url = req.url.replace(/^\/+/g, '');
     switch (true) {
         case ((parseInt(url) > 0) && (parseInt(url) < 100)):
-            console.log('Vote: ' + url);
             votes[mac] = url;
             var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
                 .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</span>`)
@@ -55,7 +53,6 @@ http.createServer((async (req, res) => {
             res.end();
             break;
         case (parseInt(url) == 0):
-            console.log('Vote: ' + url);
             delete votes[mac];
             var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
                 .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</span>`)
@@ -65,7 +62,6 @@ http.createServer((async (req, res) => {
             res.end();
             break;
         default:
-            console.log('NaN : ' + url + '\n');
             render_results(req, res);
     }
 })).listen(8080, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
