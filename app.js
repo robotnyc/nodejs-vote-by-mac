@@ -31,6 +31,11 @@ async function render_results(req, res) {
     return;
 };
 
+if (!isNaN(parseInt(process.argv[2])))
+	var port = process.argv[2];
+else
+	var port = 80;
+
 http.createServer((async (req, res) => {
     var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
 
@@ -64,6 +69,6 @@ http.createServer((async (req, res) => {
         default:
             render_results(req, res);
     }
-})).listen(8080, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
+})).listen(port, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
 
-console.log("Server listening on port 8080\n");
+console.log(`Server listening on port ${port}\n`);
