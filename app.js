@@ -45,7 +45,7 @@ http.createServer((async (req, res) => {
     // process vote from URL server/#
     let url = req.url.replace(/^\/+/g, '');
     switch (true) {
-        case ((parseInt(url) > 0) && (parseInt(url) <= 100)):
+        case ((parseInt(url) > 0) && (parseInt(url) <= config.choices)):
             votes[mac] = url;
             var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
                 .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</span>`)
