@@ -5,6 +5,8 @@ const util = require('util');
 const fs = require('fs');
 const { exec } = require('child_process');
 
+const config = require('./config.js');
+
 // votes are stored in RAM
 var votes = {};
 
@@ -30,11 +32,6 @@ async function render_results(req, res) {
     res.end();
     return;
 };
-
-if (!isNaN(parseInt(process.argv[2])))
-	var port = process.argv[2];
-else
-	var port = 8080;
 
 http.createServer((async (req, res) => {
     var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
@@ -69,6 +66,6 @@ http.createServer((async (req, res) => {
         default:
             render_results(req, res);
     }
-})).listen(port, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
+})).listen(config.port, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
 
-console.log(`Server listening on port ${port}`);
+console.log(`Server listening on port ${config.port}`);
