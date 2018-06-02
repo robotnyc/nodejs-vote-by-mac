@@ -35,12 +35,11 @@ async function render_results(req, res) {
     console.log(rank);
     let max = 0;
     let winners = {};
-    for (var key in rank) {
+    for (var key in rank)
         if (key > max) {
             max = key;
             winners = rank[key];
         }
-    }
     let results_html = "";
     for (var choice in winners)
         results_html += '\t<tr>\n\t\t<td>' + winners[choice] + '</td>\n\t\t<td>' + max + '</td>\n\t</tr>\n';
