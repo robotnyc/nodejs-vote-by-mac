@@ -32,7 +32,6 @@ async function render_results(req, res) {
         votes_html += `\t<tr>\n\t\t<td>${voter.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</td>\n\t\t<td>${votes[voter]}</td>\n\t</tr>\n`;
     }
     let rank = swap_key_value(results);
-    console.log(rank);
     let max = 0;
     let winners = {};
     for (var key in rank)
@@ -41,8 +40,12 @@ async function render_results(req, res) {
             winners = rank[key];
         }
     let results_html = "";
-    for (var choice in winners)
-        results_html += '\t<tr>\n\t\t<td>' + winners[choice] + '</td>\n\t\t<td>' + max + '</td>\n\t</tr>\n';
+    if (config.winner_only)
+        for (var choice in winners)
+            results_html += '\t<tr>\n\t\t<td>' + winners[choice] + '</td>\n\t\t<td>' + max + '</td>\n\t</tr>\n';
+    else
+        for (var choice in results)
+            results_html += '\t<tr>\n\t\t<td>' + choice + '</td>\n\t\t<td>' + results[choice] + '</td>\n\t</tr>\n';
     let data = (await util.promisify(fs.readFile)('./index.html', 'utf8'))
         .replace(/<span id="tr-mac-vote" style="display:none;"><\/span>/g, votes_html)
         .replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
@@ -56,7 +59,6 @@ async function render_results(req, res) {
 
 http.createServer((async (req, res) => {
     var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
-
     // MAC not found / invalid (e.g. localhost)
     if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
         render_results(req, res);
