@@ -46,6 +46,8 @@ async function render_results(req, res) {
     let data = (await util.promisify(fs.readFile)('./index.html', 'utf8'))
         .replace(/<span id="tr-mac-vote" style="display:none;"><\/span>/g, votes_html)
         .replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
+    if (!config.show_votes)
+        data = data.replace(/<votes>[\s\S]*?<\/votes>/g, '');
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(data);
     res.end();
