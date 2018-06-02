@@ -10,12 +10,11 @@ const config = require('./config.js');
 // votes are stored in RAM
 var votes = {};
 
-function swap_key_value(json){
+function swap_key_value(json) {
   var ret = {};
-  for(var key in json){
-    if (! ret.hasOwnProperty(json[key])) {
+  for(var key in json) {
+    if (! ret.hasOwnProperty(json[key]))
       ret[json[key]] = [];
-    }
     ret[json[key]].push(key);
   }
   return ret;
