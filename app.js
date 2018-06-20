@@ -20,7 +20,7 @@ function swap_key_value(json) {
   return ret;
 }
 
-async function render_results(req, res) {
+async function get_index(req, res) {
     // render choices
     let choice_html = "";
     for (var choice = 1; choice <= config.choices; choice++) {
@@ -73,7 +73,7 @@ http.createServer((async (req, res) => {
     var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
     // MAC not found / invalid (e.g. localhost)
     if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
-        render_results(req, res);
+        get_index(req, res);
         return;
     }
 
@@ -99,7 +99,7 @@ http.createServer((async (req, res) => {
             res.end();
             break;
         default:
-            render_results(req, res);
+            get_index(req, res);
     }
 })).listen(config.port, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
 
