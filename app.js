@@ -21,6 +21,13 @@ function swap_key_value(json) {
 }
 
 async function render_results(req, res) {
+    // render choices
+    let choice_html = "";
+    for (var choice = 1; choice <= config.choices; choice++) {
+        choice_html += `<a href="/${choice}">${choice}</a> `;
+    }
+
+    // render votes
     let results = {};
     let votes_html = "";
     for (var voter in votes) {
@@ -31,6 +38,8 @@ async function render_results(req, res) {
             results[vote] = 1;
         votes_html += `\t<tr>\n\t\t<td>${voter.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</td>\n\t\t<td>${votes[voter]}</td>\n\t</tr>\n`;
     }
+
+    // render results
     let rank = swap_key_value(results);
     let max = 0;
     let winners = {};
@@ -46,7 +55,10 @@ async function render_results(req, res) {
     else
         for (var choice in results)
             results_html += '\t<tr>\n\t\t<td>' + choice + '</td>\n\t\t<td>' + results[choice] + '</td>\n\t</tr>\n';
+
+    // render page
     let data = (await util.promisify(fs.readFile)('./index.html', 'utf8'))
+        .replace(/<span id="ul-choices" style="display:none;"><\/span>/g, choice_html)
         .replace(/<span id="tr-mac-vote" style="display:none;"><\/span>/g, votes_html)
         .replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
     if (!config.show_votes)
