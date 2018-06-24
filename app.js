@@ -26,9 +26,9 @@ async function get_index(req, res) {
     let choice_html = "";
     for (let choice = 1; choice <= config.choices; choice++) {
         if (choice in config.choice_names && config.choice_names[choice] != "")
-            choice_html += `<a href="/${choice}">${choice} ${config.choice_names[choice]}</a> `;
+            choice_html += `| <a href="/${choice}">${choice} ${config.choice_names[choice]}</a> `;
         else
-            choice_html += `<a href="/${choice}">${choice}</a> `;
+            choice_html += `| <a href="/${choice}">${choice}</a> `;
     }
 
     // render votes
@@ -79,9 +79,9 @@ async function get_config(req, res) {
     let choice_html = "";
     for (var choice = 1; choice <= config.choices; choice++) {
         if (choice in config.choice_names)
-            choice_html += `<li>${choice}: <input type="text" maxlength="40" name="${choice}" value="${config.choice_names[choice]}"/></li>\n`;
+            choice_html += `${choice}: <input type="text" maxlength="40" name="${choice}" value="${config.choice_names[choice]}"/><br>\n`;
         else
-            choice_html += `<li>${choice}: <input type="text" maxlength="40" name="${choice}"/></li>\n`;
+            choice_html += `${choice}: <input type="text" maxlength="40" name="${choice}"/><br>\n`;
     }
     let data = (await util.promisify(fs.readFile)('./config.html', 'utf8'))
         .replace(/<span id="input-choices" style="display:none;"><\/span>/g, choice_html);
