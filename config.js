@@ -3,5 +3,8 @@ module.exports = {
     choices: 100,
     show_votes: true,
     winner_only: false,
-    choice_names: {},
+    choice_names: {
+        1: "first",
+        2: "second",
+    },
 }
