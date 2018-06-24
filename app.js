@@ -79,9 +79,9 @@ async function get_config(req, res) {
     let choice_html = "";
     for (var choice = 1; choice <= config.choices; choice++) {
         if (choice in config.choice_names)
-            choice_html += `<input type="text" maxlength="40" name="${choice}" value="${config.choice_names[choice]}"/><br/>\n`;
+            choice_html += `<li>${choice}: <input type="text" maxlength="40" name="${choice}" value="${config.choice_names[choice]}"/></li>\n`;
         else
-            choice_html += `<input type="text" maxlength="40" name="${choice}"/><br/>\n`;
+            choice_html += `<li>${choice}: <input type="text" maxlength="40" name="${choice}"/></li>\n`;
     }
     let data = (await util.promisify(fs.readFile)('./config.html', 'utf8'))
         .replace(/<span id="input-choices" style="display:none;"><\/span>/g, choice_html);
