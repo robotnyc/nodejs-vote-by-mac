@@ -62,6 +62,8 @@ async function get_index(req, res) {
 
     // render page
     let data = (await util.promisify(fs.readFile)('./index.html', 'utf8'))
+        .replace(/<title>Vote by MAC<\/title>/g, `<title>${config.title}</title>`)
+        .replace(/<h1>Vote by MAC<\/h1>/g, `<h1>${config.title}</h1>`)
         .replace(/<span id="ul-choices" style="display:none;"><\/span>/g, choice_html)
         .replace(/<span id="tr-mac-vote" style="display:none;"><\/span>/g, votes_html)
         .replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
