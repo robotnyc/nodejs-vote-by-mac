@@ -9,11 +9,26 @@
             width: 100%;
             background-color:black;
             color: #ffffff;
+            font-family: monospace; 
+        }
+        a {
+            color: white;
         }
         p {
-            font-size: 2em;
-            font-family: monospace;  
+            font-size: 2em; 
         }
+        input[type=text] {
+            background-color: black;
+            color: white;
+            margin: 2px;
+            
+        }
+        input[type=submit] {
+            border: 2px solid lightgray;
+            background-color:transparent;
+            color: white;
+        }
+
     </style>
 </head>
 <body>
@@ -26,7 +41,7 @@
     <h2>Choice Names</h2>
     <form action="/config" method="post">
         <span id="input-choices" style="display:none;"></span>
-        <button>Save</button>
+        <input type="submit" value="Submit">
     </form>
 </body>
 </html>
