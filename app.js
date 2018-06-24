@@ -30,6 +30,7 @@ async function get_index(req, res) {
         else
             choice_html += `| <a href="/${choice}">${choice}</a> `;
     }
+    choice_html += `|`;
 
     // render votes
     let results = {};
