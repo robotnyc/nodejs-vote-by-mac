@@ -115,7 +115,12 @@ http.createServer((async (req, res) => {
         return;
     }
 
-    var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
+    try {
+        var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
+    } catch (error) {
+        console.log("MAC lookup error: " + error);
+        mac = "00:11:22:33:44:55:66";
+    }
     // MAC not found / invalid (e.g. localhost)
     if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
         get_index(req, res);
