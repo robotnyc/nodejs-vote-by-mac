@@ -13,7 +13,7 @@ var votes = {};
 
 function swap_key_value(json) {
   var ret = {};
-  for(var key in json) {
+  for(let key in json) {
     if (! ret.hasOwnProperty(json[key]))
       ret[json[key]] = [];
     ret[json[key]].push(key);
@@ -24,7 +24,7 @@ function swap_key_value(json) {
 async function get_index(req, res) {
     // render choices
     let choice_html = "";
-    for (var choice = 1; choice <= config.choices; choice++) {
+    for (let choice = 1; choice <= config.choices; choice++) {
         if (choice in config.choice_names && config.choice_names[choice] != "")
             choice_html += `<a href="/${choice}">${choice} ${config.choice_names[choice]}</a> `;
         else
@@ -47,17 +47,17 @@ async function get_index(req, res) {
     let rank = swap_key_value(results);
     let max = 0;
     let winners = {};
-    for (var key in rank)
+    for (let key in rank)
         if (key > max) {
             max = key;
             winners = rank[key];
         }
     let results_html = "";
     if (config.winner_only)
-        for (var choice in winners)
+        for (let choice in winners)
             results_html += '\t<tr>\n\t\t<td>' + winners[choice] + '</td>\n\t\t<td>' + max + '</td>\n\t</tr>\n';
     else
-        for (var choice in results)
+        for (let choice in results)
             results_html += '\t<tr>\n\t\t<td>' + choice + '</td>\n\t\t<td>' + results[choice] + '</td>\n\t</tr>\n';
 
     // render page
@@ -71,7 +71,7 @@ async function get_index(req, res) {
     res.write(data);
     res.end();
     return;
-};
+}
 
 async function get_config(req, res) {
     let choice_html = "";
@@ -96,7 +96,7 @@ async function post_config(req, res) {
     });
     req.on('end', () => {
         config.choice_names = parse(body);
-        for (var choice in config.choice_names)
+        for (let choice in config.choice_names)
             config.choice_names[choice] = config.choice_names[choice].replace(/[^0-9a-zA-Z_ ]/g, '');
         res.writeHead(301, {Location: '/'});
         res.end();
@@ -122,10 +122,11 @@ http.createServer((async (req, res) => {
 
     // process vote from URL server/#
     let url = req.url.replace(/^\/+/g, '');
+    let data = "";
     switch (true) {
         case ((parseInt(url) > 0) && (parseInt(url) <= config.choices)):
             votes[mac] = url;
-            var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
+            data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
                 .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</span>`)
                 .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote for ${parseInt(url)} has been recorded.</span>`);
             res.writeHead(200, {'Content-Type': 'text/html'});
@@ -134,7 +135,7 @@ http.createServer((async (req, res) => {
             break;
         case (parseInt(url) == 0):
             delete votes[mac];
-            var data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
+            data = (await util.promisify(fs.readFile)('./vote.html', 'utf8'))
                 .replace(/<span id="mac"><\/span>/, `<span id="mac">${mac.replace(/([:-][0-9A-Fa-f]{2}){3}$/,':xx:xx:xx')}</span>`)
                 .replace(/<span id="vote"><\/span>/, `<span id="vote">Your vote has been deleted.</span>`);
             res.writeHead(200, {'Content-Type': 'text/html'});
