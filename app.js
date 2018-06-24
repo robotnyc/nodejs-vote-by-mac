@@ -1,6 +1,7 @@
 "use strict";
 
 const http = require('http');
+const { parse } = require('querystring');
 const util = require('util');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -24,7 +25,10 @@ async function get_index(req, res) {
     // render choices
     let choice_html = "";
     for (var choice = 1; choice <= config.choices; choice++) {
-        choice_html += `<a href="/${choice}">${choice}</a> `;
+        if (choice in config.choice_names && config.choice_names[choice] != "")
+            choice_html += `<a href="/${choice}">${choice} ${config.choice_names[choice]}</a> `;
+        else
+            choice_html += `<a href="/${choice}">${choice}</a> `;
     }
 
     // render votes
@@ -69,7 +73,46 @@ async function get_index(req, res) {
     return;
 };
 
+async function get_config(req, res) {
+    let choice_html = "";
+    for (var choice = 1; choice <= config.choices; choice++) {
+        if (choice in config.choice_names)
+            choice_html += `<input type="text" maxlength="40" name="${choice}" value="${config.choice_names[choice]}"/><br/>\n`;
+        else
+            choice_html += `<input type="text" maxlength="40" name="${choice}"/><br/>\n`;
+    }
+    let data = (await util.promisify(fs.readFile)('./config.html', 'utf8'))
+        .replace(/<span id="input-choices" style="display:none;"><\/span>/g, choice_html);
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
+    res.end();
+    return;
+}
+
+async function post_config(req, res) {
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    req.on('end', () => {
+        config.choice_names = parse(body);
+        for (var choice in config.choice_names)
+            config.choice_names[choice] = config.choice_names[choice].replace(/[^0-9a-zA-Z_ ]/g, '');
+        res.writeHead(301, {Location: '/'});
+        res.end();
+    });
+}
+
 http.createServer((async (req, res) => {
+    // route config
+    if (req.url == "/config") {
+        if (req.method === 'GET')
+            get_config(req, res);
+        else if (req.method === 'POST')
+            post_config(req, res);
+        return;
+    }
+
     var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
     // MAC not found / invalid (e.g. localhost)
     if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
@@ -101,6 +144,7 @@ http.createServer((async (req, res) => {
         default:
             get_index(req, res);
     }
+
 })).listen(config.port, '0.0.0.0'); // '0.0.0.0' forces IPv4 IP address (arp only supports IPv4)
 
 console.log(`Server listening on port ${config.port}`);
