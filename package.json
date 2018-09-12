@@ -2,7 +2,7 @@
   "name": "nodejs-vote-by-mac",
   "version": "1.0.0",
   "description": "Node.js voting system using the MAC address to identify voters.",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,5 +16,8 @@
     "url": "https://github.com/lucasrangit/nodejs-vote-by-mac/issues"
   },
   "homepage": "https://github.com/lucasrangit/nodejs-vote-by-mac#readme",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^5.0.0"
+  }
 }
