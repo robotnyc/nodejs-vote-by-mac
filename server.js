@@ -21,6 +21,32 @@ function swap_key_value(json) {
   return ret;
 }
 
+function results() {
+    let results = {};
+    for (var voter in votes) {
+        let vote = votes[voter];
+        if (vote in results)
+            results[vote] += 1;
+        else
+            results[vote] = 1;
+    }
+
+    return results;
+}
+
+function winners() {
+    let rank = swap_key_value(results());
+    let max = 0;
+    let winners = [];
+    for (let key in rank)
+        if (key > max) {
+            max = key;
+            winners = rank[key];
+        }
+
+    return winners;
+}
+
 async function get_index(req, res) {
     // render choices
     let choice_html = "";
@@ -131,13 +157,46 @@ async function post_config(req, res) {
     });
 }
 
+async function get_winners(req, res) {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.write(JSON.stringify(winners()));
+    res.end();
+    return;
+}
+
+async function get_results(req, res) {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.write(JSON.stringify(results()));
+    res.end();
+    return;
+}
+
+async function get_votes(req, res) {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.write(JSON.stringify(votes));
+    res.end();
+    return;
+}
+
 http.createServer((async (req, res) => {
     // route config
     if (req.url == "/config") {
         if (req.method === 'GET')
-            get_config(req, res);
+            await get_config(req, res);
         else if (req.method === 'POST')
-            post_config(req, res);
+            await post_config(req, res);
+        return;
+    } else if (req.url == "/winners") {
+        if (req.method === 'GET')
+            await get_winners(req, res);
+        return;
+    } else if (req.url == "/results") {
+        if (req.method === 'GET')
+            await get_results(req, res);
+        return;
+    } else if (req.url == "/votes") {
+        if (req.method === 'GET')
+            await get_votes(req, res);
         return;
     }
 
@@ -145,10 +204,12 @@ http.createServer((async (req, res) => {
         var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
     } catch (error) {
         console.log("MAC lookup error: " + error);
-        mac = "00:11:22:33:44:55";
     }
     // MAC not found / invalid (e.g. localhost)
     if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
+        // uncomment for testing on localhost
+        // let n = Math.floor(Math.random() * 10) + 10; // return random two digit number from 10-19
+        // mac = "00:11:22:33:44:" + n;
         get_index(req, res);
         return;
     }
