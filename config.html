@@ -62,10 +62,30 @@
             <a href="/">Home</a>
         </li>
     </ul>
+    <h2>Options</h2>
+    <form action="/config" method="post">
+        <ul>
+            Title: <input type="text" id="title" name="title"><br>
+            Choices: <input type="number" id="choices" name="choices"><br>
+            <input type="hidden" name="show_votes" value="0">
+            Show votes:<input type="checkbox" name="show_votes" id="show_votes" value="1"><br>
+            <input type="hidden" name="winner_only" value="0">
+            Show winner only:<input type="checkbox" name="winner_only" id="winner_only" value="1"><br>
+        </ul>
+        <input type="submit" value="Submit">
+    </form>
     <h2>Choice Names</h2>
     <form action="/config" method="post">
         <ul>
             <span id="input-choices" style="display:none;"></span>
+        </ul>
+        <input type="submit" value="Submit">
+    </form>
+    <h2>Reset</h2>
+    <form action="/config" method="post">
+        <ul>
+            Names:<input type="checkbox" name="reset_names"><br>
+            Votes:<input type="checkbox" name="reset_votes"><br>
         </ul>
         <input type="submit" value="Submit">
     </form>

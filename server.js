@@ -6,7 +6,7 @@ const util = require('util');
 const fs = require('fs');
 const { exec } = require('child_process');
 
-const config = require('./config.js');
+var config = require('./config.js');
 
 // votes are stored in RAM
 var votes = {};
@@ -85,7 +85,11 @@ async function get_config(req, res) {
             choice_html += `${choice}: <input type="text" maxlength="40" name="${choice}"/><br>\n`;
     }
     let data = (await util.promisify(fs.readFile)('./config.html', 'utf8'))
-        .replace(/<span id="input-choices" style="display:none;"><\/span>/g, choice_html);
+        .replace(/<span id="input-choices" style="display:none;"><\/span>/g, choice_html)
+        .replace(/id="title"/g, `id="title" value="${config.title}"`)
+        .replace(/id="show_votes"/g, `id="show_votes" ${(config.show_votes ? "checked" : "unchecked")}`)
+        .replace(/id="winner_only"/g, `id="winner_only" ${(config.winner_only ? "checked" : "unchecked")}`)
+        .replace(/id="choices"/g, `id="choices_count" value="${config.choices}"`);
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(data);
     res.end();
@@ -98,7 +102,28 @@ async function post_config(req, res) {
         body += chunk.toString();
     });
     req.on('end', () => {
-        config.choice_names = parse(body);
+        let data = parse(body);
+        for (var property in data) {
+            if (property == "reset_names") {
+                for (let choice in config.choice_names)
+                   config.choice_names[choice] = "";
+            } else if (property == "reset_votes") {
+                for (var prop in votes)
+                        delete votes[prop];
+            } else if (typeof(config[property]) == "boolean") {
+                if (Array.isArray(data[property]))
+                    config[property] = true;
+                else
+                    config[property] = false;
+            } else if (!isNaN(property))
+                config.choice_names[property] = data[property];
+            else
+                config[property] = data[property];
+        }
+        // sanitize input
+        config.title = config.title.replace(/[^0-9a-zA-Z_ ]/g, '')
+        if (config.choices <= 0)
+            config.choices = 2;
         for (let choice in config.choice_names)
             config.choice_names[choice] = config.choice_names[choice].replace(/[^0-9a-zA-Z_ ]/g, '');
         res.writeHead(301, {Location: '/'});
