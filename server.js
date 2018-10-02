@@ -198,24 +198,30 @@ http.createServer((async (req, res) => {
         if (req.method === 'GET')
             await get_votes(req, res);
         return;
+    } else if (req.url == "/random") {
+        let n = Math.floor(Math.random() * Math.floor(99)) + 1; // return random two digit number from 10-19
+        var mac = "00:11:22:33:44:" + n;
+        var test_url = Math.floor(Math.random() * Math.floor(9)) + 1;
+    } else {
+        try {
+            var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
+        } catch (error) {
+            console.log("MAC lookup error: " + error);
+        }
     }
 
-    try {
-        var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();
-    } catch (error) {
-        console.log("MAC lookup error: " + error);
-    }
     // MAC not found / invalid (e.g. localhost)
     if (!/^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$/.test(mac)) {
-        // uncomment for testing on localhost
-        // let n = Math.floor(Math.random() * 10) + 10; // return random two digit number from 10-19
-        // mac = "00:11:22:33:44:" + n;
         get_index(req, res);
         return;
     }
 
+
     // process vote from URL server/#
-    let url = req.url.replace(/^\/+/g, '');
+    if (test_url)
+        var url = test_url
+    else
+        var url = req.url.replace(/^\/+/g, '');
     let data = "";
     switch (true) {
         case ((parseInt(url) > 0) && (parseInt(url) <= config.choices)):
