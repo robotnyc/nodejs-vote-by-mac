@@ -39,7 +39,7 @@ function winners() {
     let max = 0;
     let winners = [];
     for (let key in rank)
-        if (key > max) {
+        if (parseInt(key) > parseInt(max)) {
             max = key;
             winners = rank[key];
         }
