@@ -83,7 +83,7 @@ async function get_index(req, res) {
     if (config.winner_only)
         for (let choice in winners)
             results_html += '\t<tr>\n\t\t<td>' + winners[choice] + '</td>\n\t\t<td>' + max + '</td>\n\t</tr>\n';
-    else
+    else if (config.show_results)
         for (let choice in results)
             results_html += '\t<tr>\n\t\t<td>' + choice + '</td>\n\t\t<td>' + results[choice] + '</td>\n\t</tr>\n';
 
@@ -96,6 +96,8 @@ async function get_index(req, res) {
         .replace(/<span id="tr-choice-count" style="display:none;"><\/span>/g, results_html);
     if (!config.show_votes)
         data = data.replace(/<votes>[\s\S]*?<\/votes>/g, '');
+    if (!config.show_results && !config.winner_only)
+        data = data.replace(/<results>[\s\S]*?<\/results>/g, '');
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(data);
     res.end();
@@ -114,6 +116,7 @@ async function get_config(req, res) {
         .replace(/<span id="input-choices" style="display:none;"><\/span>/g, choice_html)
         .replace(/id="title"/g, `id="title" value="${config.title}"`)
         .replace(/id="show_votes"/g, `id="show_votes" ${(config.show_votes ? "checked" : "unchecked")}`)
+        .replace(/id="show_results"/g, `id="show_results" ${(config.show_results ? "checked" : "unchecked")}`)
         .replace(/id="winner_only"/g, `id="winner_only" ${(config.winner_only ? "checked" : "unchecked")}`)
         .replace(/id="choices"/g, `id="choices_count" value="${config.choices}"`);
     res.writeHead(200, {'Content-Type': 'text/html'});
