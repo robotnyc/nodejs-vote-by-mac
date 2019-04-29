@@ -178,6 +178,13 @@ async function get_votes(req, res) {
     return;
 }
 
+async function get_count(req, res) {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.write(JSON.stringify(Object.keys(votes).length));
+    res.end();
+    return;
+}
+
 http.createServer((async (req, res) => {
     // route config
     if (req.url == "/config") {
@@ -202,6 +209,10 @@ http.createServer((async (req, res) => {
         let n = Math.floor(Math.random() * Math.floor(99)) + 1; // return random two digit number from 10-19
         var mac = "00:11:22:33:44:" + n;
         var test_url = Math.floor(Math.random() * Math.floor(9)) + 1;
+    } else if (req.url == "/count") {
+        if (req.method === 'GET')
+            await get_count(req, res);
+        return;
     } else {
         try {
             var mac = (await util.promisify(exec)(`arp -n | awk '/${req.connection.remoteAddress}/{print $3;exit}'`)).stdout.trim();

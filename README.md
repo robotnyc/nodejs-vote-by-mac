@@ -19,3 +19,4 @@ The following JSON endpoints are available for integrations.
  * `/results` a dictionary of the results of the votes.
  * `/winners` a list of winners (more than one if there's a tie).
  * `/random` make a random vote from a random MAC for testing.
+ * `/count` the current vote count.
