@@ -18,4 +18,4 @@ The following JSON endpoints are available for integrations.
  * `/votes` an unmasked dictionary of all the votes.
  * `/results` a dictionary of the results of the votes.
  * `/winners` a list of winners (more than one if there's a tie).
-
+ * `/random` make a random vote from a random MAC for testing.
