@@ -52,11 +52,10 @@ async function get_index(req, res) {
     let choice_html = "";
     for (let choice = 1; choice <= config.choices; choice++) {
         if (choice in config.choice_names && config.choice_names[choice] != "")
-            choice_html += `| <a href="/${choice}">${choice} ${config.choice_names[choice]}</a> `;
+            choice_html += `${choice}. [${config.choice_names[choice]}](<a href="/${choice}">/${choice}</a>)</br>`;
         else
-            choice_html += `| <a href="/${choice}">${choice}</a> `;
+            choice_html += `${choice}. [${choice}](<a href="/${choice}">/${choice}</a>)</br>`;
     }
-    choice_html += `|`;
 
     // render votes
     let results = {};
