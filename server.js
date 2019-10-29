@@ -49,14 +49,14 @@ function winners() {
 
 async function get_index(req, res) {
     // render choices
-    let choice_html = "";
+    let choice_html = "<ol>\n";
     for (let choice = 1; choice <= config.choices; choice++) {
         if (choice in config.choice_names && config.choice_names[choice] != "")
-            choice_html += `| <a href="/${choice}">${choice} ${config.choice_names[choice]}</a> `;
+            choice_html += `<li><a href="/${choice}">${config.choice_names[choice]}</a></li>\n`;
         else
-            choice_html += `| <a href="/${choice}">${choice}</a> `;
+            choice_html += `<li><a href="/${choice}">${choice}</a></li>\n`;
     }
-    choice_html += `|`;
+    choice_html += `</ol>\n`;
 
     // render votes
     let results = {};
