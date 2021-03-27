@@ -51,10 +51,11 @@ async function get_index(req, res) {
     // render choices
     let choice_html = "";
     for (let choice = 1; choice <= config.choices; choice++) {
+        choice_html += `${choice}. <a href="/${choice}">`
         if (choice in config.choice_names && config.choice_names[choice] != "")
-            choice_html += `${choice}. [${config.choice_names[choice]}](<a href="/${choice}">/${choice}</a>)</br>`;
+            choice_html += `${config.choice_names[choice]}</a></br>`;
         else
-            choice_html += `${choice}. [${choice}](<a href="/${choice}">/${choice}</a>)</br>`;
+            choice_html += `/${choice}</a></br>`;
     }
 
     // render votes
@@ -106,11 +107,12 @@ async function get_index(req, res) {
 async function get_config(req, res) {
     let choice_html = "";
     for (var choice = 1; choice <= config.choices; choice++) {
+        choice_html += `${choice}. <input type="text" maxlength="120" size="80" name="${choice}"`;
         if (choice in config.choice_names)
-            choice_html += `${choice}: <input type="text" maxlength="40" name="${choice}" value="${config.choice_names[choice]}"/><br>\n`;
-        else
-            choice_html += `${choice}: <input type="text" maxlength="40" name="${choice}"/><br>\n`;
+            choice_html += ` value="${config.choice_names[choice]}"`;
+        choice_html += `/><br>\n`;
     }
+
     let data = (await util.promisify(fs.readFile)('./config.html', 'utf8'))
         .replace(/<span id="input-choices" style="display:none;"><\/span>/g, choice_html)
         .replace(/id="title"/g, `id="title" value="${config.title}"`)
@@ -153,7 +155,7 @@ async function post_config(req, res) {
         if (config.choices <= 0)
             config.choices = 2;
         for (let choice in config.choice_names)
-            config.choice_names[choice] = config.choice_names[choice].replace(/[^0-9a-zA-Z_ ]/g, '');
+            config.choice_names[choice] = config.choice_names[choice].replace(/^0-9a-zA-Z_/g, '');
         res.writeHead(301, {Location: '/'});
         res.end();
     });
