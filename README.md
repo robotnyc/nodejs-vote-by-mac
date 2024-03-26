@@ -3,6 +3,16 @@ Node.js voting system using the MAC address to identify voters.
 
 This web app is meant to be run on a local network from a Linux machine, such as a Raspberry Pi. The MAC address of the client/voter is only available in this configuration because it uses the local ARP cache to resolve the MAC address from the IP.
 
+# Deploy
+
+On a Raspberry Pi:
+1. `sudo chmod +x /etc/rc.local`
+1. Append
+```sh
+cd /home/pi/nodejs-vote-by-mac
+/usr/bin/nodejs /home/pi/nodejs-vote-by-mac/server.js &
+```
+
 # Usage
 
  * Votes are cast by visiting the URL `/NUMBER`.
